@@ -25,19 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "10.x"
+      - name: Decrypt config
+        run: ./.github/scripts/decrypt_dev.sh
 
-      - name: Install Dependencies
-        run: |
-          cd client
-          npm ci
+      - name: Test printing your secret (Remove)
+        run: cat $HOME/secrets/config.dev.json
 
-      - name: Run build
-        run: |
-          cd client
-          npm run build
         env:
           CI: true
+          DEV_CONFIG_PASSPHRASE: $
