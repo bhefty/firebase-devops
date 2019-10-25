@@ -9,6 +9,7 @@ const dotenv = require(`dotenv`);
 const fs = require(`fs`);
 
 console.log(`bef PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+console.log(`bef PROCESS.ENV.AUTH0_SCOPE`, process.env.AUTH0_SCOPE);
 if (process.env.CUSTOM_DOTENV) {
   // Load specific env file from `internals/env`
   const envPath = path.join(
@@ -29,6 +30,7 @@ if (process.env.CUSTOM_DOTENV) {
   dotenv.config();
 }
 console.log(`after PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+console.log(`after PROCESS.ENV.AUTH0_SCOPE`, process.env.AUTH0_SCOPE);
 
 module.exports = options => ({
   mode: options.mode,
@@ -139,6 +141,7 @@ module.exports = options => ({
     new webpack.EnvironmentPlugin({
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
       FIREBASE_ENV: JSON.stringify(process.env.FIREBASE_ENV),
+      AUTH0_SCOPE: JSON.stringify(process.env.AUTH0_SCOPE),
     }),
   ]),
   resolve: {
