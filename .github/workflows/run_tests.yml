@@ -5,6 +5,16 @@ on:
     branches:
       - master
       - release/production
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
+
+  push:
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
 
 jobs:
   lint:
