@@ -1,14 +1,6 @@
 name: Deploy
 
 on:
-  pull_request:
-    branches:
-      - release/dev
-    paths-ignore:
-      - "server/**"
-      - "**.md"
-      - ".gitignore"
-
   push:
     branches:
       - release/dev
