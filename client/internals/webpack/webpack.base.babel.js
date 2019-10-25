@@ -8,7 +8,7 @@ const webpack = require('webpack');
 const dotenv = require(`dotenv`);
 const fs = require(`fs`);
 
-console.log(`PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+console.log(`bef PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
 if (process.env.CUSTOM_DOTENV) {
   // Load specific env file from `internals/env`
   const envPath = path.join(
