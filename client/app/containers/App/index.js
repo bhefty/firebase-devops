@@ -29,6 +29,8 @@ const AppWrapper = styled.div`
 `;
 
 export default function App() {
+  // eslint-disable-next-line no-console
+  console.log(`process.env.FIREBASE_ENV`, process.env.FIREBASE_ENV);
   return (
     <AppWrapper>
       <Helmet
