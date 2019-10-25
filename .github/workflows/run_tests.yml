@@ -11,6 +11,9 @@ on:
       - ".gitignore"
 
   push:
+    branches:
+      - master
+      - release/production
     paths-ignore:
       - "server/**"
       - "**.md"
