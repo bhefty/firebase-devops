@@ -1,9 +1,14 @@
 name: Tests Pass
 
-on: [push]
+on:
+  pull_request:
+    branches:
+      - master
+      - release/production
 
 jobs:
-  setup:
+  lint:
+    name: Run Linter
     runs-on: ubuntu-latest
 
     steps:
@@ -11,72 +16,31 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-verion: "10.x"
-
-      - name: cd into /client
-        run: cd client
-
+          node-version: "10.x"
       - name: Install Dependencies
-        run: npm install
-        env:
-          CI: true
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
+        run: |
+          cd client
+          npm install
       - name: Run Linter
         run: npm run lint
         env:
           CI: true
-# name: Tests Pass
 
-# on:
-#   pull_request:
-#     branches:
-#       - master
-#       - release/production
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
 
-# jobs:
-#   lint:
-#     name: Run Linter
-#     runs-on: ubuntu-latest
-
-#     strategy:
-#       matrix:
-#         node-version: [10.x]
-
-#     steps:
-#       - uses: actions/checkout@v1
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v1
-#         with:
-#           node-version: ${{ matrix.node-version }}
-#       - name: npm install and test
-#         run: |
-#           cd client
-#           npm install
-#           npm run lint
-#         env:
-#           CI: true
-
-#   test:
-#     name: Run Tests
-#     runs-on: ubuntu-latest
-
-#     strategy:
-#       matrix:
-#         node-version: [10.x]
-
-#     steps:
-#       - uses: actions/checkout@v1
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v1
-#         with:
-#           node-version: ${{ matrix.node-version }}
-#       - name: npm install and test
-#         run: |
-#           cd client
-#           npm install
-#           npm run test:ci
-#         env:
-#           CI: true
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+      - name: Install Dependencies
+        run: |
+          cd client
+          npm install
+      - name: Run Tests
+        run: npm run test:ci
+        env:
+          CI: true
