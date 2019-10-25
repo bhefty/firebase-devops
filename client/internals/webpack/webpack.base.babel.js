@@ -1,9 +1,36 @@
+/* eslint-disable no-console */
 /**
  * COMMON WEBPACK CONFIGURATION
  */
 
 const path = require('path');
 const webpack = require('webpack');
+const dotenv = require(`dotenv`);
+const fs = require(`fs`);
+
+console.log(`bef PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+console.log(`bef PROCESS.ENV.AUTH0_SCOPE`, process.env.AUTH0_SCOPE);
+if (process.env.CUSTOM_DOTENV) {
+  // Load specific env file from `internals/env`
+  const envPath = path.join(
+    process.cwd(),
+    `internals/env/.${process.env.FIREBASE_ENV}.env`,
+  );
+
+  // Verify the file exists
+  fs.access(envPath, fs.F_OK, err => {
+    if (err) throw new Error(err);
+  });
+
+  dotenv.config({
+    path: envPath,
+  });
+} else {
+  // Default to root `.env`
+  dotenv.config();
+}
+console.log(`after PROCESS.ENV.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+console.log(`after PROCESS.ENV.AUTH0_SCOPE`, process.env.AUTH0_SCOPE);
 
 module.exports = options => ({
   mode: options.mode,
@@ -112,7 +139,9 @@ module.exports = options => ({
     // inside your code for any environment checks; Terser will automatically
     // drop any unreachable code.
     new webpack.EnvironmentPlugin({
-      NODE_ENV: 'development',
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+      FIREBASE_ENV: JSON.stringify(process.env.FIREBASE_ENV),
+      AUTH0_SCOPE: JSON.stringify(process.env.AUTH0_SCOPE),
     }),
   ]),
   resolve: {

@@ -1,0 +1,47 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - release/dev
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
+
+jobs:
+  build:
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Decrypt environment variables
+        run: ./.github/scripts/decrypt_env.sh
+        env:
+          ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE_DEV }}
+          ENV_FILE_NAME: "env"
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+
+      - name: Install Dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Run Build
+        run: |
+          cd client
+          npm run build
+
+      - name: Deploy
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy -P rmm-bill --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "client"
