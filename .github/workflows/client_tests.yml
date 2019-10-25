@@ -4,18 +4,7 @@ on:
   pull_request:
     branches:
       - master
-      - release/production
-      - release/dev
-    paths-ignore:
-      - "server/**"
-      - "**.md"
-      - ".gitignore"
-
-  push:
-    branches:
-      - master
-      - release/production
-      - release/dev
+      - release/**
     paths-ignore:
       - "server/**"
       - "**.md"
