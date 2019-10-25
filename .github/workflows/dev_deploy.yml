@@ -49,6 +49,7 @@ jobs:
       - name: Deploy
         uses: natemoo-re/action-firebase@master
         with:
-          args: deploy
+          name: client
+          args: deploy -P rmm-bill --non-interactive
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
