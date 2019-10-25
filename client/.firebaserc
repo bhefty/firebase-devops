@@ -1,9 +1,5 @@
 {
   "projects": {
-    "default": "app-dev-rentmindr",
-    "staging": "app-stage-rentmindr",
-    "dev": "app-dev-rentmindr",
-    "prod": "rmm-bill",
-    "qa": "rentmindme-qa"
+    "default": "rmm-bill"
   }
 }
