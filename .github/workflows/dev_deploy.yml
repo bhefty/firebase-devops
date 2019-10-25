@@ -27,10 +27,9 @@ jobs:
 
       - name: Decrypt config
         run: ./.github/scripts/decrypt_dev.sh
-
-      - name: Test printing your secret (Remove)
-        run: cat $HOME/secrets/config.dev.json
-
         env:
           CI: true
           DEV_CONFIG_PASSPHRASE: $
+
+      - name: Test printing your secret (Remove)
+        run: cat $HOME/secrets/config.dev.json
