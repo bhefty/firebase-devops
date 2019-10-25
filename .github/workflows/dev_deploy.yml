@@ -29,20 +29,19 @@ jobs:
         run: ./.github/scripts/decrypt_env.sh
         env:
           ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE_DEV }}
+          ENV_FILE_NAME: "env"
 
-      - name: Test printing secret
-        run: cat client/.env
-        # - name: Setup Node
-        #   uses: actions/setup-node@v1
-        #   with:
-        #     node-version: "10.x"
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
 
-        # - name: Install Dependencies
-        #   run: |
-        #     cd client
-        #     npm ci
+      - name: Install Dependencies
+        run: |
+          cd client
+          npm ci
 
-        # - name: Run Build
-        #   run: |
-        #     cd client
-        #     npm run build
+      - name: Run Build
+        run: |
+          cd client
+          npm run build
