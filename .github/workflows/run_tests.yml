@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd client
-          npm install
+          npm ci
       - name: Run Linter
         run: npm run lint
         env:
@@ -39,7 +39,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd client
-          npm install
+          npm ci
       - name: Run Tests
         run: npm run test:ci
         env:
