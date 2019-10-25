@@ -22,7 +22,9 @@ jobs:
           cd client
           npm ci
       - name: Run Linter
-        run: npm run lint
+        run: |
+          cd client
+          npm run lint
         env:
           CI: true
 
@@ -41,6 +43,8 @@ jobs:
           cd client
           npm ci
       - name: Run Tests
-        run: npm run test:ci
+        run: |
+          cd client
+          npm run test:ci
         env:
-          CI: true
+          CI|: true
