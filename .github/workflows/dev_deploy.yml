@@ -46,11 +46,9 @@ jobs:
           cd client
           npm run build
 
-      - name: Get Firebase CLI
-        uses: natemoo-re/action-firebase@master
-
       - name: Deploy
-        run: |
-          firebase deploy
+        uses: natemoo-re/action-firebase@master
+        with:
+          args: deploy
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_DEV }}
