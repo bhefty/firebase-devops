@@ -1,0 +1,269 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "invoices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "companyID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dueDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "invoices",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timezone",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextProcessDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "conversion.extend",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timezone",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextProcessDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recurring.nextRecurringDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within30",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within60",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within90",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within60",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within90",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalNotice.within90",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalOffer.startDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "active",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalOffer.status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timezone",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "companyID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "companyID",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "renewalOffer.startDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "renewalDecisionMade",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "general.endDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timezone",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "nextProcessDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "leases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "timezone",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recurring.nextRecurringDateTS",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
