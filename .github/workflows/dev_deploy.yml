@@ -47,8 +47,9 @@ jobs:
           npm run build
 
       - name: Deploy
-        uses: natemoo-re/action-firebase@master
+        uses: w9jds/firebase-action@master
         with:
-          args: cd client && deploy -P rmm-bill --non-interactive
+          args: deploy -P rmm-bill --non-interactive
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "client"
