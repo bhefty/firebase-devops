@@ -25,21 +25,24 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "10.x"
-
-      - name: Install Dependencies
-        run: |
-          cd client
-          npm ci
-
-      - name: Run Build
-        run: |
-          cd client
-          npm run build
-
+      - name: Decrypt environment variables
+        run: ./.github/scripts/decrypt_env.sh
         env:
-          CI: true
-          FIREBASE_ENV: ${{ secrets.DEV_FIREBASE_ENV }}
+          ENV_PASSPHRASE: ${{ secrets.ENV_PASSPHRASE_DEV }}
+
+      - name: Test printing secret
+        run: cat client/.env
+        # - name: Setup Node
+        #   uses: actions/setup-node@v1
+        #   with:
+        #     node-version: "10.x"
+
+        # - name: Install Dependencies
+        #   run: |
+        #     cd client
+        #     npm ci
+
+        # - name: Run Build
+        #   run: |
+        #     cd client
+        #     npm run build
