@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  *
  * App
@@ -29,6 +30,9 @@ const AppWrapper = styled.div`
 `;
 
 export default function App() {
+  // eslint-disable-next-line no-console
+  console.log(`process.env.FIREBASE_ENV`, process.env.FIREBASE_ENV);
+  console.log(`process.env.AUTH0_SCOPE`, process.env.AUTH0_SCOPE);
   return (
     <AppWrapper>
       <Helmet
