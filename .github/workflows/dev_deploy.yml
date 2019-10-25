@@ -1,0 +1,43 @@
+name: Client Tests
+
+on:
+  pull_request:
+    branches:
+      - release/dev
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
+
+  push:
+    branches:
+      - release/dev
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
+
+jobs:
+  build:
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+
+      - name: Install Dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Run build
+        run: |
+          cd client
+          npm run build
+        env:
+          CI: true
