@@ -1,0 +1,52 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches:
+      - release/dev
+    paths:
+      - "server/firebase/**"
+      - "!**.md"
+      - "!.gitignore"
+
+jobs:
+  build:
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Get changed files
+        run: echo "::set-env name=FUNCTIONS_TO_DEPLOY::$(./.github/scripts/deploy_changed_functions.sh)"
+        env:
+          SOURCE_BRANCH: release/dev
+          CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
+
+      - name: Setup Node
+        if: ${#DEPLOY_FUNCTIONS} > 0
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+
+      - name: Install Dependencies
+        if: ${#DEPLOY_FUNCTIONS} > 0
+        run: |
+          cd server/firebase
+          npm ci
+
+      - name: Build
+        if: ${#DEPLOY_FUNCTIONS} > 0
+        run: |
+          cd server/firebase
+          npm run funcs:clean
+          npm run funcs:build
+
+      - name: Deploy
+        if: ${#DEPLOY_FUNCTIONS} > 0
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only $FUNCTIONS_TO_DEPLOY
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "server/firebase"
