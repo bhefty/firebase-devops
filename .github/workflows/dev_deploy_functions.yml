@@ -34,10 +34,9 @@ jobs:
         run: echo $DEPLOY_FUNCTIONS
 
       - name: Make env
-        run: DEPLOY_FUNCTIONS2=heythere
-
-      - name: Print functions2
-        run: echo $DEPLOY_FUNCTIONS2
+        run: |
+          DEPLOY_FUNCTIONS2=heythere
+          echo $DEPLOY_FUNCTIONS2
       # - name: Setup Node
       #   uses: actions/setup-node@v1
       #   with:
