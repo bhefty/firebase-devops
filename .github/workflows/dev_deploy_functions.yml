@@ -33,26 +33,26 @@ jobs:
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       - name: Setup Node
-        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
+        if: contains(FUNCTIONS_TO_DEPLOY, 'functions:')
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
 
       - name: Install Dependencies
-        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
+        if: contains(FUNCTIONS_TO_DEPLOY, 'functions:')
         run: |
           cd server/firebase
           npm ci
 
       - name: Build
-        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
+        if: contains(FUNCTIONS_TO_DEPLOY, 'functions:')
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
 
       - name: Deploy
-        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
+        if: contains(FUNCTIONS_TO_DEPLOY, 'functions:')
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only $FUNCTIONS_TO_DEPLOY
