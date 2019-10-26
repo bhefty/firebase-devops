@@ -16,7 +16,7 @@ try {
 
 exports = module.exports = functions.https.onCall(async (data, context) => {
   try {
-    return { message: `Hello world!` };
+    return { message: `Hello worldz!` };
   } catch (error) {
     console.error(`Error`, error);
     return { error };

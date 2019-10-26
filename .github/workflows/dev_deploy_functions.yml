@@ -26,3 +26,17 @@ jobs:
         run: |
           cd server/firebase
           npm ci
+
+      - name: Build
+        run: |
+          cd server/firebase
+          npm run funcs:clean
+          npm run funcs:build
+
+      - name: Deploy
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only functions:helloWorld
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "client"
