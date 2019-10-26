@@ -1,11 +1,20 @@
 name: Deploy Firebase Functions
 
 on:
+  pull_request:
+    branches:
+      - release/dev
+    paths:
+      - "server/firebase/**"
+      - dev_deploy_functions.yml
+      - "!**.md"
+      - "!.gitignore"
   push:
     branches:
       - release/dev
     paths:
       - "server/firebase/**"
+      - dev_deploy_functions.yml
       - "!**.md"
       - "!.gitignore"
 
@@ -24,26 +33,26 @@ jobs:
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       - name: Setup Node
-        if: ${#DEPLOY_FUNCTIONS} > 0
+        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
 
       - name: Install Dependencies
-        if: ${#DEPLOY_FUNCTIONS} > 0
+        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
         run: |
           cd server/firebase
           npm ci
 
       - name: Build
-        if: ${#DEPLOY_FUNCTIONS} > 0
+        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
 
       - name: Deploy
-        if: ${#DEPLOY_FUNCTIONS} > 0
+        if: contains($FUNCTIONS_TO_DEPLOY, 'functions:')
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only $FUNCTIONS_TO_DEPLOY
