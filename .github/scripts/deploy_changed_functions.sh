@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git diff --name-only origin/$SOURCE_BRANCH server-init |
+git diff --name-only origin/$SOURCE_BRANCH $CURRENT_COMMIT |
 grep '\.f.\js$' |
 for f in $(cut -d'/' -f4-); do
   functionName=$(echo ${f%?????} | gsed -r 's/(\/)([a-z])/\U\2/g')
