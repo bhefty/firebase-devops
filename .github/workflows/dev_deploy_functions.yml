@@ -31,8 +31,7 @@ jobs:
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       - name: Print functions
-        run: |
-          echo $DEPLOY_FUNCTIONS
+        run: echo $DEPLOY_FUNCTIONS
       # - name: Setup Node
       #   uses: actions/setup-node@v1
       #   with:
