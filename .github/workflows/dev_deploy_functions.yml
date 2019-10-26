@@ -24,26 +24,26 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "10.x"
-
-      - name: Install Dependencies
+      - name: Get changed files
         run: |
-          cd server/firebase
-          npm ci
-
-      - name: Build
-        run: |
-          cd server/firebase
-          npm run funcs:clean
-          npm run funcs:build
-
-      - name: Deploy
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --only functions:helloWorld
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_PATH: "server/firebase"
+          git diff --name-only release/dev $GITHUB_SHA
+      # - name: Setup Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: "10.x"
+      # - name: Install Dependencies
+      #   run: |
+      #     cd server/firebase
+      #     npm ci
+      # - name: Build
+      #   run: |
+      #     cd server/firebase
+      #     npm run funcs:clean
+      #     npm run funcs:build
+      # - name: Deploy
+      #   uses: w9jds/firebase-action@master
+      #   with:
+      #     args: deploy --only functions:helloWorld
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      #     PROJECT_PATH: "server/firebase"
