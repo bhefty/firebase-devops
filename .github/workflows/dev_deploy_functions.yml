@@ -26,7 +26,7 @@ jobs:
 
       - name: Get changed files
         run: |
-          git diff --name-only release/dev ${{ secrets.GITHUB_SHA }} --
+          git diff --name-only release/dev server-init --
       # - name: Setup Node
       #   uses: actions/setup-node@v1
       #   with:
