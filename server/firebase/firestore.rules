@@ -1,0 +1,523 @@
+service cloud.firestore {
+  // Allow App Admin full access
+  match /{everything=**} {
+    allow read: if request.auth.token.admin == true;
+    allow write: if request.auth.token.admin == true;
+  }
+
+  match /databases/{database}/documents {
+    function userIsAuthenticated() {
+      return request.auth.uid != null
+    }
+
+    function getCurrentUserType() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType;
+    }
+
+    function userIsCompany() {
+      return getCurrentUserType() == "company";
+    }
+
+    function userIsTenant() {
+      return getCurrentUserType() == "tenant";
+    }
+
+    function getTenantID() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantID;
+    }
+
+    function getCurrentCompanyID() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyID
+    }
+
+    function getCompanyUserID(companyID) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companies[companyID].companyUserID;
+    }
+
+    function getCompanyRole(companyID) {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companies[companyID].role;
+    }
+
+    function isCompanyOwner(companyID) {
+      return getCompanyRole(companyID) == "owner"
+    }
+
+    function isCompanyAdmin(companyID) {
+      return getCompanyRole(companyID) == "admin"
+    }
+
+    function isCompanyOwnerOrAdmin(companyID) {
+      return isCompanyOwner(companyID) || isCompanyAdmin(companyID)
+    }
+
+    match /accounts/{customerID} {
+      function userIsCustomer() {
+        return request.resource.data.userID == request.auth.uid || resource.data.userID == request.auth.uid;
+      }
+
+      function companyIsAssociated() {
+        return getCurrentCompanyID() in request.resource.data.companyIDs || getCurrentCompanyID() in resource.data.companyIDs;
+      }
+
+      allow read: if userIsCustomer() || companyIsAssociated();
+      allow update: if userIsCustomer() || companyIsAssociated();
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth.uid == userId;
+
+      allow create: if request.auth.uid == userId;
+
+      allow update: if request.auth.uid == userId;
+    }
+
+    match /documents/{documentId} {
+      allow read;
+      allow write: if false;
+    }
+
+    match /banks/{bankId} {
+      function userOwnsBank() {
+        // CompanyID must match
+        return (resource.data.companyID is string &&
+          isCompanyOwnerOrAdmin(resource.data.companyID)) ||
+        // Or TenantID must match
+        (resource.data.tenantID is string &&
+          resource.data.tenantID == getTenantID())
+      }
+
+      function resourceBelongsToToUser() {
+        // CompanyID must match auth token
+        return (request.resource.data.companyID is string &&
+          isCompanyOwnerOrAdmin(request.resource.data.companyID)) ||
+        // TenantID must match auth token
+          (request.resource.data.tenantID is string &&
+          request.resource.data.tenantID == getTenantID())
+      }
+
+      function bankIsVald() {
+        return request.resource.data.bankID == bankId &&
+          request.resource.data.bankID is string &&
+          request.resource.data.bankID.size() > 2 &&
+          request.resource.data.bankID.size() < 200 &&
+          request.resource.data.identity is string &&
+          request.resource.data.identity.size() > 2 &&
+          request.resource.data.identity.size() < 200 &&
+          request.resource.data.nickname is string &&
+          request.resource.data.nickname.size() > 2 &&
+          request.resource.data.nickname.size() < 200 &&
+          request.resource.data.account is string &&
+          request.resource.data.account.size() == 4 &&
+          request.resource.data.status is string &&
+          request.resource.data.type is string &&
+          request.resource.data.type.size() > 2 &&
+          request.resource.data.type.size() < 200
+      }
+
+      function bankUpdateIsValid() {
+        // Do not allow updating select fields
+        return bankIsVald() && request.resource.data.account == resource.data.account &&
+        request.resource.data.bankID == resource.data.bankID &&
+        request.resource.data.companyID == resource.data.companyID &&
+        request.resource.data.createDate == resource.data.createDate &&
+        request.resource.data.identity == resource.data.identity &&
+        request.resource.data.tenantID == resource.data.tenantID
+      }
+
+      allow read: if userIsAuthenticated() && userOwnsBank();
+      allow create: if userIsAuthenticated() && resourceBelongsToToUser() && bankIsVald();
+      allow update: if userIsAuthenticated() && resourceBelongsToToUser() && bankUpdateIsValid();
+    }
+
+    match /checkbookUsers/{checkbookUserId} {
+      function userIsCheckbookUser() {
+        // CompanyID must match
+        return (resource.data.companyID is string &&
+          resource.data.tenantID == null &&
+          isCompanyOwnerOrAdmin(resource.data.companyID)) ||
+        // Or TenantID must match
+        (resource.data.tenantID is string &&
+        resource.data.companyID == null &&
+          resource.data.tenantID == getTenantID())
+      }
+
+      function resourceBelongsToToUser() {
+        // CompanyID must match auth token
+        return (request.resource.data.companyID is string &&
+          request.resource.data.tenantID == null &&
+          isCompanyOwnerOrAdmin(request.resource.data.companyID)) ||
+        // TenantID must match auth token
+          (request.resource.data.tenantID is string &&
+          request.resource.data.companyID == null &&
+          request.resource.data.tenantID == getTenantID())
+      }
+
+      function resourceIsValid() {
+        return request.resource.data.id == checkbookUserId &&
+          request.resource.data.key is string &&
+          request.resource.data.key.size() > 2 &&
+          request.resource.data.key.size() < 200 &&
+          request.resource.data.secret is string &&
+          request.resource.data.secret.size() > 2 &&
+          request.resource.data.secret.size() < 200
+      }
+
+      allow read: if userIsAuthenticated() && userIsCheckbookUser();
+      allow create: if userIsAuthenticated() && resourceBelongsToToUser() && resourceIsValid();
+    }
+
+    match /buildings/{buildingId} {
+      function companyOwnsResource() {
+        // Only the building owner (company) can make changes
+        return (isCompanyOwnerOrAdmin(request.resource.data.companyID)) ||
+          (isCompanyOwnerOrAdmin(resource.data.companyID));
+      }
+
+      function buildingData() {
+        return get(/databases/$(database)/documents/buildings/$(buildingId)).data;
+      }
+
+      function companyOwnsBuilding() {
+        // Only the building owner (company) can make changes
+        return isCompanyOwnerOrAdmin(buildingData().companyID);
+      }
+
+      allow read: if userIsAuthenticated();
+      allow create: if userIsAuthenticated() && companyOwnsResource();
+      allow update: if userIsAuthenticated() && companyOwnsResource();
+
+      match /private_data/{privateDataId} {
+        allow read: if userIsAuthenticated() && companyOwnsBuilding();
+        allow write: if userIsAuthenticated() && companyOwnsBuilding();
+      }
+
+      match /expenses/{privateDataId} {
+        allow read: if userIsAuthenticated() && companyOwnsBuilding();
+        allow write: if userIsAuthenticated() && companyOwnsBuilding();
+      }
+
+      match /assets/{privateDataId} {
+        allow read: if userIsAuthenticated() && companyOwnsBuilding();
+        allow write: if userIsAuthenticated() && companyOwnsBuilding();
+      }
+
+      match /prevUnits/{privateDataId} {
+        allow read: if userIsAuthenticated() && companyOwnsBuilding();
+        allow write: if userIsAuthenticated() && companyOwnsBuilding();
+      }
+    }
+
+    match /bulletins/{bulletinId} {
+      function isOwner() {
+        // Only allow author of bulletin to change it
+        return isCompanyOwnerOrAdmin(request.resource.data.createdByCompanyID) ||
+          isCompanyOwnerOrAdmin(resource.data.createdByCompanyID)
+      }
+
+      function companyCanRead() {
+        // Any company can read
+        return userIsCompany() && resource.data.permissions.userTypes.company == true ||
+          resource.data.permissions.companyIDs[getCurrentCompanyID()] == true ||
+          isCompanyOwnerOrAdmin(resource.data.createdByCompanyID);
+      }
+
+      function tenantCanRead() {
+        // Any tenant can read
+        return userIsTenant() && (resource.data.permissions.userTypes.tenant == true ||
+          resource.data.permissions.tenantIDs[getTenantID()] == true)
+      }
+
+      function userCanRead() {
+        // Specific user can read
+        return resource.data.permissions.userIDs[request.auth.uid] == true
+      }
+
+      function unauthenticatedCanRead() {
+        // Bulletin is "public" and unauthenticated users can read it
+        return resource.data.public == true
+      }
+
+      allow read: if unauthenticatedCanRead() || (userIsAuthenticated() && userCanRead()) || (userIsAuthenticated() && companyCanRead()) ||
+        (userIsAuthenticated() && tenantCanRead());
+      allow create: if userIsAuthenticated() && isOwner();
+      allow update: if userIsAuthenticated() && isOwner();
+    }
+
+    match /checks/{checkId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    match /companies/{companyId} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(companyId);
+      allow update: if userIsAuthenticated() && isCompanyOwnerOrAdmin(companyId);
+    }
+
+    // All subcollections for company
+    match /companies/{companyId}/{document=**} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(companyId);
+      allow write: if userIsAuthenticated() && isCompanyOwnerOrAdmin(companyId);
+    }
+
+    match /companies_metrics_invoices_collections/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_metrics_invoices_due/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_metrics_invoices_finalized/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_metrics_invoices_late/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_metrics_units/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_metrics_timerecording/{id} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /companies_public/{companyId} {
+      allow read: if userIsAuthenticated();
+    }
+
+    match /invoices/{invoiceId} {
+      function companyCanRead() {
+        return isCompanyOwnerOrAdmin(resource.data.companyID);
+      }
+
+      function tenantCanRead() {
+        return resource.data.tenants[getTenantID()].tenantID == getTenantID()
+      }
+
+      function companyCanUpdate() {
+        return isCompanyOwnerOrAdmin(request.resource.data.companyID);
+      }
+
+      function userCanRead() {
+        return companyCanRead() || tenantCanRead()
+      }
+
+      function userCanUpdate() {
+        return companyCanUpdate()
+      }
+
+      allow read: if userIsAuthenticated() && userCanRead();
+      allow update: if userIsAuthenticated() && userCanUpdate();
+    }
+
+    match /leases/{leaseId} {
+      function companyCanRead() {
+        return isCompanyOwnerOrAdmin(resource.data.companyID);
+      }
+
+      function tenantCanRead() {
+        return resource.data.tenants[getTenantID()].tenantID == getTenantID()
+      }
+
+      function companyCanUpdate() {
+        return isCompanyOwnerOrAdmin(request.resource.data.companyID);
+      }
+
+      function tenantCanUpdate() {
+          // Tenant cannot change the following fields
+        return resource.data.tenants[getTenantID()].tenantID == getTenantID() &&
+          request.resource.data.active == resource.data.active &&
+          request.resource.data.buildingID == resource.data.buildingID &&
+          request.resource.data.companyActive == resource.data.companyActive &&
+          request.resource.data.companyActiveUpdated == resource.data.companyActiveUpdated &&
+          request.resource.data.companyID == resource.data.companyID &&
+          request.resource.data.conversion == resource.data.conversion &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          request.resource.data.currentBalance == resource.data.currentBalance &&
+          request.resource.data.currentInvoices == resource.data.currentInvoices &&
+          request.resource.data.deposits == resource.data.deposits &&
+          request.resource.data.fees == resource.data.fees &&
+          request.resource.data.general == resource.data.general &&
+          request.resource.data.invoices == resource.data.invoices &&
+          request.resource.data.latestInvoiceID == resource.data.latestInvoiceID &&
+          request.resource.data.leaseID == resource.data.leaseID &&
+          request.resource.data.nextDueDate == resource.data.nextDueDate &&
+          request.resource.data.nextDueDateTS == resource.data.nextDueDateTS &&
+          request.resource.data.nextLateDate == resource.data.nextLateDate &&
+          request.resource.data.nextLateDateTS == resource.data.nextLateDateTS &&
+          request.resource.data.nextProcessDate == resource.data.nextProcessDate &&
+          request.resource.data.nextProcessDateTS == resource.data.nextProcessDateTS &&
+          request.resource.data.prevInvoices == resource.data.prevInvoices &&
+          request.resource.data.renewalDecisionMade == resource.data.renewalDecisionMade &&
+          request.resource.data.rent == resource.data.rent &&
+          request.resource.data.subsidies == resource.data.subsidies &&
+          request.resource.data.tenantInviteStatus == resource.data.tenantInviteStatus &&
+          request.resource.data.tenants == resource.data.tenants &&
+          request.resource.data.timezone == resource.data.timezone &&
+          request.resource.data.type == resource.data.type &&
+          request.resource.data.units == resource.data.units
+      }
+
+      function userCanRead() {
+        return companyCanRead() || tenantCanRead()
+      }
+
+      function userCanUpdate() {
+        return companyCanUpdate() || tenantCanUpdate()
+      }
+
+      allow read: if userIsAuthenticated() && userCanRead();
+      allow update: if userIsAuthenticated() && userCanUpdate();
+    }
+
+    match /tenants/{tenantId} {
+      function userCanRead() {
+        // Tenant can read their own data
+        return (tenantId == getTenantID()) ||
+        // Or company can read data if it's one of their tenants
+          userIsCompany()
+      }
+
+      function companyCanWrite() {
+        return request.resource.data.companies[getCurrentCompanyID()] == getCurrentCompanyID();
+      }
+
+      function tenantCanUpdate() {
+        return tenantId == getTenantID()
+      }
+
+      allow read: if userIsAuthenticated() && userCanRead();
+      allow create: if userIsAuthenticated() && companyCanWrite();
+      allow update: if userIsAuthenticated() && (companyCanWrite() || tenantCanUpdate());
+    }
+
+    match /tokens/{tokenId} {
+      allow read: if userIsAuthenticated() && isCompanyOwnerOrAdmin(request.resource.data.companyID);
+      allow create: if userIsAuthenticated() && isCompanyOwnerOrAdmin(request.resource.data.companyID);
+      allow update: if userIsAuthenticated() && isCompanyOwnerOrAdmin(request.resource.data.companyID);
+      allow delete: if userIsAuthenticated() && isCompanyOwnerOrAdmin(resource.data.companyID);
+    }
+
+    match /units/{unitId} {
+      function companyOwnsUnit() {
+        // Only the unit owner (company) can make changes
+        return isCompanyOwnerOrAdmin(request.resource.data.companyID) ||
+          isCompanyOwnerOrAdmin(resource.data.companyID)
+      }
+
+      allow read: if userIsAuthenticated();
+      allow create: if userIsAuthenticated() && companyOwnsUnit();
+      allow update: if userIsAuthenticated() && companyOwnsUnit();
+
+      match /lease_history/{leaseHistoryId} {
+        allow read: if userIsAuthenticated() && companyOwnsUnit();
+        allow write: if userIsAuthenticated() && companyOwnsUnit();
+      }
+
+      match /private_data/{privateDataId} {
+        allow read: if userIsAuthenticated() && companyOwnsUnit();
+        allow write: if userIsAuthenticated() && companyOwnsUnit();
+      }
+    }
+
+    match /workorders/{workorderId} {
+      function tenantCanRead() {
+        // Tenant can only read if they created the work order or they are on the list of tenants
+        return (resource.data.createdBy == request.auth.uid) ||
+          (userIsTenant() &&
+          resource.data.hidden == false &&
+          resource.data.tenants[getTenantID()].tenantID == getTenantID())
+      }
+
+      function tenantCanWrite() {
+        // Tenant can only write if they created the work order or they are on the list of tenants
+        return (request.resource.data.createdBy == request.auth.uid) ||
+          (userIsTenant() &&
+          request.resource.data.hidden == false &&
+          request.resource.data.tenants[getTenantID()].tenantID == getTenantID())
+      }
+
+      function companyCanReadWO() {
+        // Company can only read if they created the work order or they own it
+        return (resource.data.createdBy == request.auth.uid) ||
+          (userIsCompany() &&
+          isCompanyOwnerOrAdmin(resource.data.companyID))
+      }
+
+      function companyCanWriteWO() {
+        // Company can only write if they created the work order or they own it
+        return (request.resource.data.createdBy == request.auth.uid) ||
+          (userIsCompany() &&
+          isCompanyOwnerOrAdmin(request.resource.data.companyID))
+      }
+
+      function sharedUserIsValid() {
+        return userIsAuthenticated() && workorderId == request.auth.token.shareID
+      }
+
+      function workorderData() {
+        return get(/databases/$(database)/documents/workorders/$(workorderId)).data
+      }
+
+      allow read: if tenantCanRead() || companyCanReadWO() || sharedUserIsValid();
+      allow create: if tenantCanWrite() || companyCanWriteWO() || sharedUserIsValid();
+      allow update: if tenantCanWrite() || companyCanWriteWO() || sharedUserIsValid();
+
+      match /private/{privateDataId} {
+        function companyCanReadPrivate() {
+          // Company can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+          (userIsCompany() &&
+          isCompanyOwnerOrAdmin(workorderData().companyID))
+        }
+
+        function companyCanWritePrivate() {
+          // Company can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+            (userIsCompany() &&
+            isCompanyOwnerOrAdmin(workorderData().companyID))
+        }
+
+        allow read: if companyCanReadPrivate() || sharedUserIsValid();
+        allow create: if companyCanWritePrivate() || sharedUserIsValid();
+        allow update: if companyCanWritePrivate() || sharedUserIsValid();
+      }
+
+      match /updates/{updateId} {
+        function tenantCanReadUpdate() {
+          // Tenant can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+          (userIsTenant() &&
+          workorderData().tenants[getTenantID()].tenantID == getTenantID())
+        }
+
+        function tenantCanWriteUpdate() {
+          // Tenant can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+            (userIsTenant() &&
+            workorderData().tenants[getTenantID()].tenantID == getTenantID())
+        }
+
+        function companyCanReadUpdate() {
+          // Company can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+          (userIsCompany() &&
+          isCompanyOwnerOrAdmin(workorderData().companyID))
+        }
+
+        function companyCanWriteUpdate() {
+          // Company can only write if they created the work order or they own it
+          return (workorderData().createdBy == request.auth.uid) ||
+            (userIsCompany() &&
+            isCompanyOwnerOrAdmin(workorderData().companyID))
+        }
+
+        allow read: if tenantCanReadUpdate() || companyCanReadUpdate() || sharedUserIsValid();
+        allow create: if tenantCanWriteUpdate() || companyCanWriteUpdate() || sharedUserIsValid();
+        allow update: if tenantCanWriteUpdate() || companyCanWriteUpdate() || sharedUserIsValid();
+      }
+    }
+  }
+}

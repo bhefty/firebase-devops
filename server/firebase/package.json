@@ -1,0 +1,49 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "funcs:build": "babel functions --out-dir dist",
+    "funcs:clean": "rimraf dist"
+  },
+  "engines": {
+    "node": "10"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "10.15.3"
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ]
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.6.3",
+    "camelcase": "^5.3.1",
+    "firebase-admin": "^8.0.0",
+    "firebase-functions": "^3.1.0",
+    "glob": "^7.1.5",
+    "idempotent-babel-polyfill": "^7.4.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
+    "babel-eslint": "^10.0.3",
+    "firebase-functions-test": "^0.1.6",
+    "rimraf": "^3.0.0"
+  },
+  "private": true
+}
