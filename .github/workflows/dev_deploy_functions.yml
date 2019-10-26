@@ -34,15 +34,18 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
+
       - name: Install Dependencies
         run: |
           cd server/firebase
           npm ci
+
       - name: Build
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
+
       - name: Deploy
         uses: w9jds/firebase-action@master
         with:
