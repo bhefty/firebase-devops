@@ -33,29 +33,29 @@ jobs:
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       - name: Check if any functions need deployed
-        run: echo "::set-env name=DEPLOY_REQUIRED::$(./.github/scripts/does_function_deploy_exist.sh)"
+        run: echo ::set-output name=DEPLOY_REQUIRED:$(./.github/scripts/does_function_deploy_exist.sh)"
 
       - name: Setup Node
-        if: $DEPLOY_REQUIRED == "true"
+        if: steps.id.outputs.DEPLOY_REQUIRED == "true"
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
 
       - name: Install Dependencies
-        if: $DEPLOY_REQUIRED == "true"
+        if: steps.id.outputs.DEPLOY_REQUIRED == "true"
         run: |
           cd server/firebase
           npm ci
 
       - name: Build
-        if: $DEPLOY_REQUIRED == "true"
+        if: steps.id.outputs.DEPLOY_REQUIRED == "true"
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
 
       - name: Deploy
-        if: $DEPLOY_REQUIRED == "true"
+        if: steps.id.outputs.DEPLOY_REQUIRED == "true"
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only $FUNCTIONS_TO_DEPLOY
