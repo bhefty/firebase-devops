@@ -27,38 +27,43 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Get changed files
-        run: echo "::set-env name=FUNCTIONS_TO_DEPLOY::$(./.github/scripts/deploy_changed_functions.sh)"
+        run: echo "::set-env name=DEPLOY_REQUIRED::$(./.github/scripts/deploy_changed_functions.sh)"
         env:
           SOURCE_BRANCH: release/dev
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
+      # - name: Get changed files
+      #   run: echo "::set-env name=FUNCTIONS_TO_DEPLOY::$(./.github/scripts/deploy_changed_functions.sh)"
+      #   env:
+      #     SOURCE_BRANCH: release/dev
+      #     CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       # - name: Check if any functions need deployed
       #   run: echo ::set-output name=DEPLOY_REQUIRED:$(var=$FUNCTIONS_TO_DEPLOY ./.github/scripts/does_function_deploy_exist.sh)"
 
       - name: Setup Node
-        if: FUNCTIONS_TO_DEPLOY != 'abort'
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
 
       - name: Install Dependencies
-        if: FUNCTIONS_TO_DEPLOY != 'abort'
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         run: |
           cd server/firebase
           npm ci
 
       - name: Build
-        if: FUNCTIONS_TO_DEPLOY != 'abort'
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
 
       - name: Deploy
-        if: FUNCTIONS_TO_DEPLOY != 'abort'
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only $FUNCTIONS_TO_DEPLOY
+          args: deploy --only ${{ steps.id.outputs.DEPLOY_REQUIRED }}
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_PATH: "server/firebase"
