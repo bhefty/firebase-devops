@@ -35,14 +35,6 @@ jobs:
 
       - name: Print
         run: echo ${{ steps.changed_files.outputs.DEPLOY_REQUIRED }}
-      # - name: Get changed files
-      #   run: echo "::set-env name=FUNCTIONS_TO_DEPLOY::$(./.github/scripts/deploy_changed_functions.sh)"
-      #   env:
-      #     SOURCE_BRANCH: release/dev
-      #     CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
-
-      # - name: Check if any functions need deployed
-      #   run: echo ::set-output name=DEPLOY_REQUIRED:$(var=$FUNCTIONS_TO_DEPLOY ./.github/scripts/does_function_deploy_exist.sh)"
 
       - name: Setup Node
         if: steps.changed_files.outputs.DEPLOY_REQUIRED != 'abort'
