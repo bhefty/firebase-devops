@@ -44,26 +44,26 @@ jobs:
       #   run: echo ::set-output name=DEPLOY_REQUIRED:$(var=$FUNCTIONS_TO_DEPLOY ./.github/scripts/does_function_deploy_exist.sh)"
 
       - name: Setup Node
-        if: steps.id.outputs.DEPLOY_REQUIRED != "abort"
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         uses: actions/setup-node@v1
         with:
           node-version: "10.x"
 
       - name: Install Dependencies
-        if: steps.id.outputs.DEPLOY_REQUIRED != "abort"
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         run: |
           cd server/firebase
           npm ci
 
       - name: Build
-        if: steps.id.outputs.DEPLOY_REQUIRED != "abort"
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         run: |
           cd server/firebase
           npm run funcs:clean
           npm run funcs:build
 
       - name: Deploy
-        if: steps.id.outputs.DEPLOY_REQUIRED != "abort"
+        if: steps.id.outputs.DEPLOY_REQUIRED != 'abort'
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only ${{ steps.id.outputs.DEPLOY_REQUIRED }}
