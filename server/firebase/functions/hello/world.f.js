@@ -14,9 +14,12 @@ try {
 }
 // INCLUDE ABOVE AT TOP OF ALL FUNCTION FILES
 
+const { demo } = require('./util')
+
 exports = module.exports = functions.https.onCall(async (data, context) => {
   try {
-    return { message: `Hello worldz!` };
+    const result = demo()
+    return { message: `Hello world! Demo - ${result}` };
   } catch (error) {
     console.error(`Error`, error);
     return { error };
