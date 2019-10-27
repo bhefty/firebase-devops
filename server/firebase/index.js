@@ -27,6 +27,7 @@ const admin = require(`firebase-admin`);
   // credential: admin.credential.cert(serviceAccount),
   // databaseURL: fbConfig.db,
 // });
+// Just a comment 2
 admin.initializeApp()
 
 const glob = require(`glob`);
