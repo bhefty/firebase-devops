@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Check if FUNCTIONS_TO_DEPLOY has a value
-string=$FUNCTIONS_TO_DEPLOY
+# Check if var has a value
+string=$var
 if [[ $string == *"functions:"* ]]; then
   echo "true"; else
   echo "false"
