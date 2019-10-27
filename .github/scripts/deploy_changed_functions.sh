@@ -16,5 +16,10 @@ for f in $(echo "${DIFFS}" | cut -d'/' -f4-); do
   fi
 done
 
-# Print the final list of functions to be deployed
-echo $FUNCTIONS_LIST
+# Check if there are any functions to deploy
+if [ -z ${FUNCTIONS_LIST+x} ];
+  # Return abort message to stop workflow
+  then echo 'abort'
+  # Return the functions to deploy
+  else echo $FUNCTIONS_LIST
+fi
