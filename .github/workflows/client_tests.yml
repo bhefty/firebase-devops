@@ -15,8 +15,8 @@ jobs:
       - name: Print test env
         run: echo CURRENT_COMMIT=$CURRENT_COMMIT SOURCE_BRANCH=$SOURCE_BRANCH GITHUB_SHA=$GITHUB_SHA GITHUB_REF=$GITHUB_REF
         env:
-          SOURCE_BRANCH: ${{ $GITHUB_REF }}
-          CURRENT_COMMIT: ${{ $GITHUB_SHA }}
+          SOURCE_BRANCH: "$GITHUB_REF"
+          CURRENT_COMMIT: "$GITHUB_SHA"
     # name: Detect file changes
     # runs-on: ubuntu-latest
     # steps:
