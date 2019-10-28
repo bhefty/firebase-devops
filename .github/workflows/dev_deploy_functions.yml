@@ -33,7 +33,7 @@ jobs:
           SOURCE_BRANCH: release/dev
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
-      - name: Print
+      - name: Print functions to be deployed
         run: echo ${{ steps.changed_files.outputs.DEPLOY_REQUIRED }}
 
       - name: Setup Node

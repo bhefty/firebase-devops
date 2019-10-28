@@ -5,10 +5,11 @@ on:
     branches:
       - master
       - release/**
-    paths:
-      - "client/**"
-      - "!**.md"
-      - "!.gitignore"
+    paths-ignore:
+      - "server/**"
+      - "**.md"
+      - ".gitignore"
+      - ".github/**"
 
 jobs:
   lint:
