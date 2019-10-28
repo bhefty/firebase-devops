@@ -1,0 +1,25 @@
+name: Deploy Firebase Functions
+
+on:
+  push:
+    branches:
+      - release/dev
+    paths:
+      - "server/firebase/firestore.rules"
+
+jobs:
+  rules:
+    name: Deploy Rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Deploy Firestore Rules
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only firestore:rules
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "server/firebase"
+          PROJECT_ID: "rmm-bill"
