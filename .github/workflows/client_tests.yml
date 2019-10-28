@@ -21,11 +21,10 @@ jobs:
           )
           if [ -n "$DIFF_FILES" ];
             # Return "true" - changes detected in `client/`
-            then echo true
+            then echo 'true' >> did-client-change.txt
             # Return "false" - no changes in `client/`
-            else echo 'false'
+            else echo 'false' >> did-client-change.txt
           fi
-          > did-client-change.txt
       - name: Upload change result for `client/**`
         uses: actions/upload-artifact@v1
         with:
