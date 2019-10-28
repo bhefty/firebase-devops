@@ -7,6 +7,7 @@ on:
     paths-ignore:
       - "server/**"
       - "**.md"
+      - "**.yml"
       - ".gitignore"
 
 jobs:

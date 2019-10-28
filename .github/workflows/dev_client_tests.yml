@@ -5,8 +5,7 @@ on:
     branches:
       - release/dev
     paths-ignore:
-      - ".github/scripts/**"
-    
+      - "**.yml"
 
 jobs:
   changes_detected:
