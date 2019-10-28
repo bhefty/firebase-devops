@@ -4,6 +4,11 @@ on:
   pull_request:
     branches:
       - release/dev
+    paths-ignore:
+      - dev_deploy_functions.yml
+      - dev_deploy_client.yml
+      - master_client_tests.yml
+    
 
 jobs:
   changes_detected:
