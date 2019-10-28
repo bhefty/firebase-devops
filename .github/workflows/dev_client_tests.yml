@@ -5,9 +5,7 @@ on:
     branches:
       - release/dev
     paths-ignore:
-      - dev_deploy_functions.yml
-      - dev_deploy_client.yml
-      - master_client_tests.yml
+      - ".github/scripts/**"
     
 
 jobs:
