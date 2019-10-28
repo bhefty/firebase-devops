@@ -1,14 +1,6 @@
 name: Deploy Firebase Functions
 
 on:
-  pull_request:
-    branches:
-      - release/dev
-    paths:
-      - "server/firebase/**"
-      - dev_deploy_functions.yml
-      - "!**.md"
-      - "!.gitignore"
   push:
     branches:
       - release/dev
