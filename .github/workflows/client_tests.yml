@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Print test env
-        run: echo CURRENT_COMMIT=$CURRENT_COMMIT SOURCE_BRANCH=$SOURCE_BRANCH GITHUB_SHA=${{ secrets.GITHUB_SHA }} GITHUB_REF=${{ secrets.GITHUB_REF }}
+        run: echo CURRENT_COMMIT=$CURRENT_COMMIT SOURCE_BRANCH=$SOURCE_BRANCH GITHUB_SHA=$GITHUB_SHA GITHUB_REF=$GITHUB_REF
         env:
-          SOURCE_BRANCH: ${{ secrets.GITHUB_REF }}
-          CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
+          SOURCE_BRANCH: $GITHUB_REF
+          CURRENT_COMMIT: $GITHUB_SHA
     # name: Detect file changes
     # runs-on: ubuntu-latest
     # steps:
