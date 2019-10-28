@@ -14,7 +14,8 @@ jobs:
       - shell: bash
         run: |
           # Get a list of changed files (starting with `client/`)
-          echo Starting
+          echo Starting $GITHUB_SHA
+          echo Test this $(git diff --name-only origin/release/dev $GITHUB_SHA)
           DIFF_FILES=$(git diff --name-only origin/release/dev $GITHUB_SHA |
             grep '^client\/' |
             grep -v '\.gitignore$'
