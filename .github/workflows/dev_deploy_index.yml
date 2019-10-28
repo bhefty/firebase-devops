@@ -1,0 +1,25 @@
+name: Deploy Firebase Indexes
+
+on:
+  push:
+    branches:
+      - release/dev
+    paths:
+      - "server/firebase/firestore.indexes.json"
+
+jobs:
+  index:
+    name: Deploy Indexes
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Deploy Firestore Indexes
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only firestore:indexes
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_PATH: "server/firebase"
+          PROJECT_ID: "rmm-bill"
