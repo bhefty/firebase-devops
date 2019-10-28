@@ -20,10 +20,9 @@ jobs:
 
       - name: Get changed files
         id: changed_files
-        run: echo "::set-output name=DEPLOY_REQUIRED::$(./.github/scripts/deploy_changed_functions.sh)"
+        run: echo "::set-output name=DEPLOY_REQUIRED::$(CURRENT_COMMIT=$GITHUB_SHA ./.github/scripts/deploy_changed_functions.sh)"
         env:
           SOURCE_BRANCH: release/dev
-          CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
       - name: Print functions to be deployed
         run: echo ${{ steps.changed_files.outputs.DEPLOY_REQUIRED }}
