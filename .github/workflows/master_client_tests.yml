@@ -66,39 +66,39 @@ jobs:
         env:
           CI: true
 
-    test:
-      name: Run Tests
-      needs: changes_detected
-      runs-on: ubuntu-latest
+  test:
+    name: Run Tests
+    needs: changes_detected
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Download change result
-          uses: actions/download-artifact@v1
-          with:
-            name: client-change
+    steps:
+      - name: Download change result
+        uses: actions/download-artifact@v1
+        with:
+          name: client-change
 
-        - name: Set client_changed output
-          id: client_changed
-          run: echo "::set-output name=CONTINUE::$(cat client-change/did-client-change.txt)"
+      - name: Set client_changed output
+        id: client_changed
+        run: echo "::set-output name=CONTINUE::$(cat client-change/did-client-change.txt)"
 
-        - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
 
-        - name: Setup Node
-          if: steps.client_changed.outputs.CONTINUE == 'true'
-          uses: actions/setup-node@v1
-          with:
-            node-version: "10.x"
+      - name: Setup Node
+        if: steps.client_changed.outputs.CONTINUE == 'true'
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
 
-        - name: Install Dependencies
-          if: steps.client_changed.outputs.CONTINUE == 'true'
-          run: |
-            cd client
-            npm ci
+      - name: Install Dependencies
+        if: steps.client_changed.outputs.CONTINUE == 'true'
+        run: |
+          cd client
+          npm ci
 
-        - name: Run Tests
-          if: steps.client_changed.outputs.CONTINUE == 'true'
-          run: |
-            cd client
-            npm run test:ci
-          env:
-            CI|: true
+      - name: Run Tests
+        if: steps.client_changed.outputs.CONTINUE == 'true'
+        run: |
+          cd client
+          npm run test:ci
+        env:
+          CI|: true
