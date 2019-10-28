@@ -17,9 +17,9 @@ appendFunction() {
 
 
 # Get a list of changed functions (ending in `.f.js`)
-DIFF_FUNCTIONS=$(git diff --name-only origin/release/dev b0797c1fea7516f42fd6b663dd2c120fad6243dd | grep '\.f.\js$')
+DIFF_FUNCTIONS=$(git diff --name-only origin/$SOURCE_BRANCH $CURRENT_COMMIT | grep '\.f.\js$')
 
-DIFF_HELPERS=$(git diff --name-only origin/release/dev b0797c1fea7516f42fd6b663dd2c120fad6243dd |
+DIFF_HELPERS=$(git diff --name-only origin/$SOURCE_BRANCH $CURRENT_COMMIT |
   awk '/hello\/util\.js|cron\/invoice\/handler\.js|lease\/renewal\.js|lease\/terminateLease\.js|lease\/sendRenewalDecisionNotification\.js|checkbook\/create\/check\.js/{print}' )
 
 # For each function, get the camelcased name (hello/world.f.js becomes helloWorld)
@@ -89,7 +89,7 @@ for f in $(echo "$DIFF_HELPERS" | cut -d'/' -f4-); do
     appendFunction cronLeasesRenewalNotice30
     appendFunction cronLeasesRenewalNotice60
     appendFunction cronLeasesRenewalNotice90
-    
+
   elif [ $f == 'checkbook/create/check.js' ]
   then
     appendFunction checkbookCreateDigitalCheck
@@ -109,9 +109,7 @@ for f in $(echo "$DIFF_HELPERS" | cut -d'/' -f4-); do
   elif [ $f == 'hello/util.js' ]
   then
     appendFunction helloWorld
-  else
-    echo "NOTHING"
-  fi
+    appendFunction goodbyeWorld
 done
 
 # Check if there are any functions to deploy
