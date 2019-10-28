@@ -11,8 +11,21 @@ jobs:
     name: Print stuff
     runs-on: ubuntu-latest
     steps:
-      - name: Print test
+      - name: Print test env
+        run: echo GITHUB_SHA=$CURRENT_COMMIT GITHUB_REF=$SOURCE_BRANCH
+        env:
+          SOURCE_BRANCH: ${{ secrets.GITHUB_REF }}
+          CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
+
+      - name: Print test checkout
+        uses: actions/checkout@v1
         run: echo GITHUB_SHA=${{ secrets.GITHUB_SHA }} GITHUB_REF=${{ secrets.GITHUB_REF }}
+
+      - name: Print test checkout env
+        run: echo GITHUB_SHA=$CURRENT_COMMIT GITHUB_REF=$SOURCE_BRANCH
+        env:
+          SOURCE_BRANCH: ${{ secrets.GITHUB_REF }}
+          CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
     # name: Detect file changes
     # runs-on: ubuntu-latest
     # steps:
