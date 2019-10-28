@@ -9,10 +9,14 @@ on:
 jobs:
   changes_detected:
     name: Print GITHUB_SHA
+    runs-on: ubuntu-latest
     steps:
+      -shell: bash
       run: echo GITHUB_SHA=${{ secrets.GITHUB_SHA }}
     name: Print GITHUB_REF
+    runs-on: ubuntu-latest
     steps:
+      -shell: bash
       run: echo GITHUB_REF=${{ secrets.GITHUB_REF }}
 
     name: Detect file changes
