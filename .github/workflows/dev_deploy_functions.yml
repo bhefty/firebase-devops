@@ -54,3 +54,4 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_PATH: "server/firebase"
+          PROJECT_ID: "rmm-bill"
