@@ -109,7 +109,8 @@ for f in $(echo "$DIFF_HELPERS" | cut -d'/' -f4-); do
   elif [ $f == 'hello/util.js' ]
   then
     appendFunction helloWorld
-    appendFunction goodbyeWorld
+  
+  fi
 done
 
 # Check if there are any functions to deploy
