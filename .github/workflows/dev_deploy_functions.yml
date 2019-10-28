@@ -6,7 +6,7 @@ on:
       - release/dev
     paths:
       - "server/firebase/**"
-      - dev_deploy_functions.yml
+      - "!**.yml"
       - "!**.md"
       - "!.gitignore"
 
