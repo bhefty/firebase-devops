@@ -8,59 +8,47 @@ on:
 
 jobs:
   changes_detected:
-    name: Print GITHUB_SHA
+    name: Print stuff
     runs-on: ubuntu-latest
     steps:
-      -shell: bash
-      run: |
-        echo GITHUB_SHA=${{ secrets.GITHUB_SHA }}
-    name: Print GITHUB_REF
-    runs-on: ubuntu-latest
-    steps:
-      -shell: bash
-      run: |
-        echo GITHUB_REF=${{ secrets.GITHUB_REF }}
-
-    name: Detect file changes
-    runs-on: ubuntu-latest
-    steps:
-      - shell: bash
-        run: |
-          # Get a list of changed files (starting with `client/`)
-          DIFF_FILES=$(git diff --name-only origin/release/dev ${{ secrets.GITHUB_SHA }} |
-            grep '^client\/' |
-            grep -v '\.gitignore$'
-          )
-
-          if [ -n "$DIFF_FILES" ];
-            # Return "true" - changes detected in `client/`
-            then echo true
-            # Return "false" - no changes in `client/`
-            else echo 'false'
-          fi
-          > did-client-change.txt
-      - name: Upload change result for `client/**`
-        uses: actions/upload-artifact@v1
-        with:
-          name: client-change
-          path: did-client-change.txt
-
-  lint:
-    name: Runt Linter
-    needs: changes_detected
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download change result
-        uses: actions/download-artifact@v1
-        with:
-          name: client-change
-
-      - name: Print result
-        shell: bash
-        run: |
-          value=`cat client-change/did-client-change.txt`
-          echo The result is $value
-
+      - name: Print test
+        run: echo GITHUB_SHA=${{ secrets.GITHUB_SHA }} GITHUB_REF=${{ secrets.GITHUB_REF }}
+    # name: Detect file changes
+    # runs-on: ubuntu-latest
+    # steps:
+    #   - shell: bash
+    #     run: |
+    #       # Get a list of changed files (starting with `client/`)
+    #       DIFF_FILES=$(git diff --name-only origin/release/dev ${{ secrets.GITHUB_SHA }} |
+    #         grep '^client\/' |
+    #         grep -v '\.gitignore$'
+    #       )
+    #       if [ -n "$DIFF_FILES" ];
+    #         # Return "true" - changes detected in `client/`
+    #         then echo true
+    #         # Return "false" - no changes in `client/`
+    #         else echo 'false'
+    #       fi
+    #       > did-client-change.txt
+    #   - name: Upload change result for `client/**`
+    #     uses: actions/upload-artifact@v1
+    #     with:
+    #       name: client-change
+    #       path: did-client-change.txt
+  # lint:
+  #   name: Runt Linter
+  #   needs: changes_detected
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Download change result
+  #       uses: actions/download-artifact@v1
+  #       with:
+  #         name: client-change
+  #     - name: Print result
+  #       shell: bash
+  #       run: |
+  #         value=`cat client-change/did-client-change.txt`
+  #         echo The result is $value
 # on:
 #   pull_request:
 #     branches:
