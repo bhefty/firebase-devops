@@ -17,8 +17,8 @@ jobs:
           SOURCE_BRANCH: ${{ secrets.GITHUB_REF }}
           CURRENT_COMMIT: ${{ secrets.GITHUB_SHA }}
 
+      - uses: actions/checkout@v1
       - name: Print test checkout
-        uses: actions/checkout@v1
         run: echo GITHUB_SHA=${{ secrets.GITHUB_SHA }} GITHUB_REF=${{ secrets.GITHUB_REF }}
 
       - name: Print test checkout env
