@@ -1,5 +1,6 @@
 service cloud.firestore {
   // Allow App Admin full access
+  // Comment
   match /{everything=**} {
     allow read: if request.auth.token.admin == true;
     allow write: if request.auth.token.admin == true;
