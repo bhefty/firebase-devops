@@ -5,51 +5,86 @@ on:
     branches:
       - master
       - release/**
-    paths-ignore:
-      - "server/**"
-      - "**.md"
-      - ".gitignore"
-      - ".github/**"
 
 jobs:
+  changes_detected:
+    name: Detect file changes
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: ./.github/scripts/did_client_change.sh > did-client-change.txt
+      - name: Upload change result for `client/**`
+        uses: actions/upload-artifact@v1
+        with:
+          name: client-change
+          path: did-client-change.txt
+
   lint:
-    name: Run Linter
+    name: Runt Linter
+    needs: changes_detected
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node
-        uses: actions/setup-node@v1
+      - name: Download change result
+        uses: actions/download-artifact@v1
         with:
-          node-version: "10.x"
-      - name: Install Dependencies
-        run: |
-          cd client
-          npm ci
-      - name: Run Linter
-        run: |
-          cd client
-          npm run lint
-        env:
-          CI: true
+          name: client-change
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
+      - name: Print result
+        shell: bash
+        run: |
+          value=`cat client-change/did-client-change.txt`
+          echo The result is $value
 
-    steps:
-      - uses: actions/checkout@v1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: "10.x"
-      - name: Install Dependencies
-        run: |
-          cd client
-          npm ci
-      - name: Run Tests
-        run: |
-          cd client
-          npm run test:ci
-        env:
-          CI|: true
+# on:
+#   pull_request:
+#     branches:
+#       - master
+#       - release/**
+#     paths-ignore:
+#       - "server/**"
+#       - "**.md"
+#       - ".gitignore"
+#       - ".github/**"
+
+# jobs:
+#   lint:
+#     name: Run Linter
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v1
+#       - name: Setup Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "10.x"
+#       - name: Install Dependencies
+#         run: |
+#           cd client
+#           npm ci
+#       - name: Run Linter
+#         run: |
+#           cd client
+#           npm run lint
+#         env:
+#           CI: true
+
+#   test:
+#     name: Run Tests
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - uses: actions/checkout@v1
+#       - name: Setup Node
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "10.x"
+#       - name: Install Dependencies
+#         run: |
+#           cd client
+#           npm ci
+#       - name: Run Tests
+#         run: |
+#           cd client
+#           npm run test:ci
+#         env:
+#           CI|: true
